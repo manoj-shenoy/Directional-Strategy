@@ -17,6 +17,8 @@ Twitter (TWTR) - 0.1
 Facebook (FB) - 1.5
 Bank of America (BAC) - 0.06
 JP Morgan (JPM) - 0.3
+Goldman Sachs (GS) - 0.4
+United Airlines (UAL) - 0.15
 
 
 Next steps to take:
@@ -26,5 +28,5 @@ Next steps to take:
 3. Research ways to identify range bound market and implement a range bound strategy. Overall script should switch between range bound and trending strategy based on market condition
 4. Research optimal indicators or combination of indicators which provide strong trend indication - for leveraging trades
 5. Do parameter optimization/walk forward analysis of strategy on each futures contract
-6. Do portfolio level optimization and backtest with optimized individual strategies in Python
+6. Do portfolio level optimization and backtest in Python. Build full fledged bactesting and execution platform for crypto/stocks
 7. For future security/risk minimization - research Renko strategy on pairs not associated with USDT
