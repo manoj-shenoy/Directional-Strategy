@@ -1,0 +1,35 @@
+//@version=4
+study("Custom Bollinger Bands Study",overlay=true)
+// plot(close)
+
+length = input(5, minval=1)
+src    = input(close, title="Source")
+mult   = input(1.0, minval=0.001, maxval=50)
+pyram  = input(1, "Pyramiding", minval=1)
+
+basis = sma(src, length)
+dev = mult * stdev(src, length)
+upper = basis + dev
+lower = basis - dev
+
+pos = 0
+
+long_signal  = nz(pos[1]) <  pyram and crossover(close, upper)
+short_signal = nz(pos[1]) > -pyram and crossunder(close, lower)
+
+pos := nz(pos[1]) < 0 and long_signal ? 1 :
+       long_signal ? nz(pos[1]) + 1 :
+       nz(pos[1]) > 0 and short_signal ? -1 :
+       short_signal ? nz(pos[1]) - 1 :
+       nz(pos[1])
+
+plot(basis, color=color.blue, title="SMA band", linewidth=2)
+p1 = plot(upper, color=color.green, title="upper band", linewidth=2)
+p2 = plot(lower, color=color.red, title="lower band", linewidth=2)
+fill(p1, p2, transp=75)
+
+plotshape(long_signal, location=location.belowbar,  color=color.blue, style=shape.arrowup,   text="Long Entry",  title='Buy')
+plotshape(short_signal, location=location.abovebar, color=color.red,  style=shape.arrowdown, text="Short Entry", title='Sell')
+
+alertcondition(long_signal, "Long Signal")
+alertcondition(short_signal, "Short Signal")
