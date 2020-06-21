@@ -1,0 +1,24 @@
+Renko strategy notes
+
+Bar sizes:
+
+ETH - 1.5
+BTC - 42
+LTC - 0.8
+XRP - 0.0017
+ADA - 0.0004
+EOS - 0.0085
+XTZ - 0.005
+AT&T (T) - 0.1
+Micron (MU) - 0.1
+
+
+Next steps to take:
+
+1. Modify Custom Bollinger Bands strategy script to include dynamic position sizing and create alerts from strategy script
+2. Research ways to identify trend/anti-trend markets to enhance Renko strategy returns in strong trends
+3. Research ways to identify range bound market and implement a range bound strategy. Overall script should switch between range bound and trending strategy based on market condition
+4. Research optimal indicators or combination of indicators which provide strong trend indication - for leveraging trades
+5. Do parameter optimization/walk forward analysis of strategy on each futures contract
+6. Do portfolio level optimization and backtest with optimized individual strategies in Python
+7. For future security/risk minimization - research Renko strategy on pairs not associated with USDT
