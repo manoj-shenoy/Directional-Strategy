@@ -1,0 +1,63 @@
+//@version=4
+strategy("Custom Bollinger Bands Strategy", overlay=true, process_orders_on_close=true)
+
+startDate = input(title="Start Date", type=input.integer,
+     defval=1, minval=1, maxval=31)
+startMonth = input(title="Start Month", type=input.integer,
+     defval=1, minval=1, maxval=12)
+startYear = input(title="Start Year", type=input.integer,
+     defval=2018, minval=1900, maxval=2100)
+     
+endDate = input(title="End Date", type=input.integer,
+     defval=1, minval=1, maxval=31)
+endMonth = input(title="End Month", type=input.integer,
+     defval=1, minval=1, maxval=12)
+endYear = input(title="End Year", type=input.integer,
+     defval=2020, minval=1900, maxval=2100)
+
+inDateRange = (time >= timestamp(syminfo.timezone, startYear,
+         startMonth, startDate, 0, 0)) and
+     (time < timestamp(syminfo.timezone, endYear, endMonth, endDate, 0, 0))
+
+buy_source = close
+sell_source = close
+length = input(5, minval=1)
+entry_mult = input(1.0, minval=0.001, maxval=50)
+exit_mult = input(1.0, minval=0.001, maxval=50)
+
+buy_basis = sma(buy_source, length)
+sell_basis = sma(sell_source, length)
+
+buy_dev = entry_mult * stdev(close, length)
+sell_dev = entry_mult * stdev(close, length)
+
+buyexit_dev = exit_mult * stdev(sell_source, length)
+sellexit_dev = exit_mult * stdev(buy_source, length)
+
+upper = buy_basis + buy_dev
+lower = sell_basis - sell_dev
+
+plot(upper, color=color.green)
+plot(lower, color=color.red)
+
+upper_stop = sell_basis - buyexit_dev
+lower_stop = buy_basis + sellexit_dev
+
+buyEntry = crossover(close, upper)
+sellEntry = crossunder(close,lower)
+
+if (inDateRange and buyEntry)
+    strategy.entry("Vol.LE", strategy.long, stop=upper_stop, oca_name="BollingerBands", oca_type=strategy.oca.cancel, comment="Vol.LE")
+//if (crossunder(low,lower) and adx(12,12) <= 26)
+   // strategy.entry("Range.LE", strategy.long, stop=crossunder(close,low), oca_name="BollingerBands", oca_type=strategy.oca.cancel, comment="Range.LE")
+else if (inDateRange and buyEntry == false)
+    strategy.cancel(id="Vol.LE")
+
+if (inDateRange and sellEntry)
+    strategy.entry("Vol.SE", strategy.short, stop=lower_stop, oca_name="BollingerBands", oca_type=strategy.oca.cancel, comment="Vol.SE")
+//if (crossover(high,upper) and  adx(LWdilength,LWadxlength) <= 26)
+    //strategy.entry("Range.SE", strategy.short, stop=crossover(close,high), oca_name="BollingerBands", oca_type=strategy.oca.cancel, comment="Range.SE")
+else if (inDateRange and sellEntry == false)
+    strategy.cancel(id="Vol.SE")
+
+//plot(strategy.equity, title="equity", color=red, linewidth=2, style=areabr)
