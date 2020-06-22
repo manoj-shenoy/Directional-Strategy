@@ -30,7 +30,7 @@ inDateRange = (time >= timestamp(syminfo.timezone, startYear,
 
 
 src = close 
-len = input(5, "LOOKBACK") 
+len = input(3, "LOOKBACK") 
 
 
 /////////////////////////////////////////////
