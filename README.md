@@ -1,1 +1,1 @@
-# Renko-Strategy
+# Directional-Strategy
