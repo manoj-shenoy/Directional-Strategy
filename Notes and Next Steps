@@ -34,3 +34,4 @@ Next steps to take:
 6. Do portfolio level optimization and backtest in Python. Build full fledged bactesting and execution platform for crypto/stocks
 7. Look for risk minimization against USDT - research Renko strategy on pairs not associated with USDT
 8. Look into optimal execution techniques for Renko strategy on stocks to reduce slippage
+9. Run month-by-month analysis of portfolio performance
