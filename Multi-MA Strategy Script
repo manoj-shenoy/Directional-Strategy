@@ -22,7 +22,7 @@ endDate = input(title="End Date", type=input.integer,
 endMonth = input(title="End Month", type=input.integer,
      defval=1, minval=1, maxval=12)
 endYear = input(title="End Year", type=input.integer,
-     defval=2020, minval=1900, maxval=2100)
+     defval=2030, minval=1900, maxval=2100)
 
 inDateRange = (time >= timestamp(syminfo.timezone, startYear,
          startMonth, startDate, 0, 0)) and
