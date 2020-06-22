@@ -1,0 +1,62 @@
+study(title="Pair Trading. Grey area chart is normalized spread between two pairs", shorttitle="StatArb.Pair Trading. Grey area chart is normalized spread between two pairs", overlay=true)
+tf_short = input(title="Timeframe",type=string,defval='15')
+stoploss = input(title="StopLoss %",type=float,defval=10)
+takeprofit = input(title="takeProfit %",type=float,defval=30)
+avgLookback = input(title="Smoothing Lookback period in bars - short",type=integer,defval=10)
+avgLookback_long = input(title="Smoothing Lookback period in bars - long" ,type=integer,defval=100)
+stdDevMultiplier =input(title="Standard deviation multiplier",type=integer,defval=4)
+sym1_short = input(title="Symbol1", type=symbol, defval="AUDUSD"), res1 = tf_short, source1 = close
+sym2_short = input(title="Symbol2", type=symbol, defval="XAUUSD"), res2 = tf_short, source2 = close
+sym_price1 = security(sym1_short, res1, source1) 
+sym_price2 = security(sym2_short, res2, source2)
+cum_changePcnt1_short = cum(1*(sym_price1- offset(sym_price1,1))/sym_price1)
+cum_changePcnt2_short = cum(1*(sym_price2- offset(sym_price2,1))/sym_price2)
+sym_priceNorm_1 = (sym_price1[0])*(1+cum_changePcnt1_short) 
+sym_priceNorm_2 = (sym_price1[0])*(1+cum_changePcnt2_short)  
+
+spread_norm = (sym_priceNorm_1-sym_priceNorm_2)
+spread_short = ema(sym_priceNorm_1-sym_priceNorm_2 ,avgLookback) 
+spread_long= ema(sym_priceNorm_1-sym_priceNorm_2  ,avgLookback_long)
+spread_stdev_short = stdev(spread_long,avgLookback)
+lower_band_entry = spread_long-spread_stdev_short*stdDevMultiplier
+upper_band_entry = spread_long+spread_stdev_short*stdDevMultiplier
+lower_band_exit = spread_long-spread_stdev_short*stdDevMultiplier*4
+upper_band_exit = spread_long+spread_stdev_short*stdDevMultiplier*4
+
+signalLine_Short = ((offset(spread_short,0) - offset(lower_band_entry,0)))>0 
+               and ((offset(spread_short,1) - offset(lower_band_entry,1)))<0
+signalLine_Long =  ((offset(spread_short,0) - offset(upper_band_entry,0))<0) 
+               and ((offset(spread_short,1) - offset(upper_band_entry,1))>0)
+ //SHORTS              
+entry_Short = iff(signalLine_Short==0, na,spread_norm) 
+stoploss_level_short   = entry_Short + abs(entry_Short *(stoploss/100))
+takeprofit_level_short = entry_Short - abs(entry_Short *(takeprofit/100))
+entry_Short_sl = iff((offset(spread_norm,0) > offset(stoploss_level_short,0)) 
+                 and (offset(spread_norm,1) < offset(stoploss_level_short,1)),spread_norm,na )
+entry_Short_tp = iff((offset(spread_norm,0) < offset(takeprofit_level_short,0)) 
+                 and (offset(spread_norm,1) > offset(takeprofit_level_short,1)),spread_norm,na )
+ //LONGS
+entry_Long  = iff(signalLine_Long==0, na,sym_priceNorm_1-sym_priceNorm_2)  
+stoploss_level_long   = entry_Long - abs(entry_Long *(stoploss/100))
+takeprofit_level_long = entry_Long + abs(entry_Long *(takeprofit/100))
+entry_Long_sl = iff((offset(spread_norm,0) < offset(stoploss_level_long,0)) 
+                and (offset(spread_norm,1) > offset(stoploss_level_long,1)),spread_norm,na )
+entry_Long_tp = iff((offset(spread_norm,0) > offset(takeprofit_level_long,0)) 
+                and (offset(spread_norm,1) < offset(takeprofit_level_long,1)),spread_norm,na )
+//
+signalLine_Short_exit =  offset(spread_short,0) - offset(upper_band_exit,0)>0
+                  and    offset(upper_band_exit,1) -    offset(spread_short,1)>0
+signalLine_Long_exit  =  offset(spread_short,0)  - offset(lower_band_exit,0)>0 
+                     and offset(lower_band_exit,1)  -    offset(spread_short,1)>0
+                           
+plot((spread_norm) ,style=area,color=black,transp =90, linewidth=1)  
+
+plot(entry_Short,style=circles,color=red, trackprice=true,linewidth=4)
+plot(entry_Long, style=circles,color=green, trackprice=true,linewidth=4) 
+// exits                
+plot(stoploss_level_short,style=linebr,color=red, trackprice=true,linewidth=1)
+plot(takeprofit_level_short,style=cross,color=red, trackprice=true,linewidth=1)
+plot(stoploss_level_long,style=linebr,color=green, trackprice=true,linewidth=1)
+plot(takeprofit_level_long,style=cross,color=green, trackprice=true,linewidth=1)
+
+//Found here: https://www.tradingview.com/script/OJpLQmqI-StatArb/
