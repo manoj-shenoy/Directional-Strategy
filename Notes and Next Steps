@@ -37,3 +37,4 @@ Next steps to take:
 8. Look for risk minimization against USDT - research Renko strategy on pairs not associated with USDT
 9. Look into optimal execution techniques for Renko strategy on stocks to reduce slippage
 10. Run month-by-month analysis of portfolio performance
+11. Recode strategy script so it can run on regular 1m candlesticks but calculations should be done in the background on renko bars
