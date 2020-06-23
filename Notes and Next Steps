@@ -41,3 +41,4 @@ Next steps to take:
 9. Look into optimal execution techniques for Renko strategy on stocks to reduce slippage
 10. Run month-by-month analysis of portfolio performance
 11. Recode strategy script so it can run on regular 1m candlesticks but calculations should be done in the background on renko bars
+12. Move entire trading operation to cloud server
