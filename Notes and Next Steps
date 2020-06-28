@@ -43,3 +43,4 @@ Next steps to take:
 11. Recode strategy script so it can run on regular 1m candlesticks but calculations should be done in the background on renko bars
 12. Move entire trading operation to cloud server
 13. Create automated post trade analysis script to check for slippages
+# 14. Backtesting Platform in R/Python- integrating the strategy as a function input
