@@ -45,3 +45,4 @@ Next steps to take:
 14. Backtesting Platform in R/Python- integrating the strategy as a function input
 15. Explore possibility of Tradingview API to schedule timed jobs for PTA automation/data export
 16. Look into using Tradingview webhooks to create independent order placement system for multiple crypto exchanges and stock brokerages
+17. Come up with methods to deal with/hedge flash crash risk - sharpe move within 1 min could cause large losses/liquidation
