@@ -49,3 +49,4 @@ Next steps to take:
 17. Come up with methods to deal with/hedge flash crash risk - sharpe move within 1 min could cause large losses/liquidation
 18. EXPAND TO AT LEAST 10 COINS on Binance for further diversification and ability to deploy more capital: Choose from LTC, BCH, ETC, BNB, IOTA
 19. Re-run backtests every 6 months to account for change in prices - bar sizes would need to be adjusted accordingly
+20. Possibly explore dynamic renko bar size in R backtesting platform. Bar size would adjust as a percentage of changing security price
