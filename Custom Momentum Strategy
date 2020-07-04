@@ -1,7 +1,7 @@
 //@version=4
 strategy("Custom Momentum Strategy",
          overlay=true, 
-         initial_capital=500,
+         initial_capital=5000,
          currency="USD",
          default_qty_type=strategy.percent_of_equity,
          default_qty_value=70,
