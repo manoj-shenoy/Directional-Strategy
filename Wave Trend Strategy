@@ -9,6 +9,24 @@ strategy(title="Custom Wave Trend Strategy",
          commission_value=0.25,
          process_orders_on_close=true)
 
+startDate = input(title="Start Date", type=input.integer,
+     defval=1, minval=1, maxval=31)
+startMonth = input(title="Start Month", type=input.integer,
+     defval=1, minval=1, maxval=12)
+startYear = input(title="Start Year", type=input.integer,
+     defval=2019, minval=1900, maxval=2100)
+     
+endDate = input(title="End Date", type=input.integer,
+     defval=1, minval=1, maxval=31)
+endMonth = input(title="End Month", type=input.integer,
+     defval=1, minval=1, maxval=12)
+endYear = input(title="End Year", type=input.integer,
+     defval=2021, minval=1900, maxval=2100)
+
+inDateRange = (time >= timestamp(syminfo.timezone, startYear,
+         startMonth, startDate, 0, 0)) and
+     (time < timestamp(syminfo.timezone, endYear, endMonth, endDate, 0, 0))
+
 n1 = input(2, "Channel Length")
 n2 = input(21, "Average Length")
 obLevel1 = input(60, "Over Bought Level 1")
@@ -34,24 +52,6 @@ plot(osLevel2, color=color.green, style=3)
 plot(wt1, color=color.green)
 plot(wt2, color=color.red, style=3)
 plot(wt1-wt2, color=color.blue, style=plot.style_area, transp=80)
-
-startDate = input(title="Start Date", type=input.integer,
-     defval=1, minval=1, maxval=31)
-startMonth = input(title="Start Month", type=input.integer,
-     defval=1, minval=1, maxval=12)
-startYear = input(title="Start Year", type=input.integer,
-     defval=2019, minval=1900, maxval=2100)
-     
-endDate = input(title="End Date", type=input.integer,
-     defval=1, minval=1, maxval=31)
-endMonth = input(title="End Month", type=input.integer,
-     defval=1, minval=1, maxval=12)
-endYear = input(title="End Year", type=input.integer,
-     defval=2021, minval=1900, maxval=2100)
-
-inDateRange = (time >= timestamp(syminfo.timezone, startYear,
-         startMonth, startDate, 0, 0)) and
-     (time < timestamp(syminfo.timezone, endYear, endMonth, endDate, 0, 0))
 
 
 //Strategy
