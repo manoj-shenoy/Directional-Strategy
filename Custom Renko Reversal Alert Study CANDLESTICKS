@@ -1,0 +1,34 @@
+//@version=4
+study("Custom Renko Reversal Alert Study CANDLESTICKS", overlay=true) 
+//Buy entry if a bearish renko brick is followed by a bullish brick
+//Sell entry if a bullish brick is followed by a bearish brick
+
+//Bar size notes
+//renko_barsize BTC = 18
+//renko_barsize EOS = 0.01
+
+pyram  = input(1, "Pyramiding", minval=1)
+
+renko_barsize = input(defval=18, title="Renko Bar Size")
+renko_bar = renko(symbol=syminfo.tickerid, style="Traditional", param=renko_barsize)
+renko_open = security(renko_bar, "D", open)
+renko_close = security(renko_bar, "D", close)
+
+pos = 0
+
+long = nz(pos[1]) < pyram and renko_close[1] > renko_open[2] and renko_close[2] < renko_close[3] and renko_close > renko_open
+short = nz(pos[1]) > -pyram and renko_close[1] < renko_open[2] and renko_close[2] > renko_close[3] and renko_close < renko_open
+
+pos := nz(pos[1]) < 0 and long ? 1 :
+       long ? nz(pos[1]) + 1 :
+       nz(pos[1]) > 0 and short ? -1 :
+       short ? nz(pos[1]) - 1 :
+       nz(pos[1])
+
+//Use these alerts to create server-side alerts (right-click on one of the buy or sell arrows on the chart and choose "add alert")
+alertcondition(long, title='Long Signal')
+alertcondition(short, title='Short Signal')
+
+//Use this to customize the look of the arrows to suit your needs.
+plotshape(long, location=location.belowbar, color=color.lime, style=shape.arrowup, text="Buy")
+plotshape(short, location=location.abovebar, color=color.red, style=shape.arrowdown, text="Sell")
