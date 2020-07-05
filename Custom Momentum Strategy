@@ -30,8 +30,8 @@ inDateRange = (time >= timestamp(syminfo.timezone, startYear,
 length = input(2)
 price = close
 
-momentum(seria, length) =>
-    mom = seria - seria[length]
+momentum(src, length) =>
+    mom = src - src[length]
     mom
 
 mom0 = momentum(price, length)
