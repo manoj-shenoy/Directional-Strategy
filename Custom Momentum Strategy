@@ -35,14 +35,13 @@ momentum(seria, length) =>
     mom
 
 mom0 = momentum(price, length)
-mom1 = momentum( mom0, 1)
 
-if (inDateRange and mom0 > 0 and mom1 > 0)
+if (inDateRange and mom0 > 0)
     strategy.entry("MomLE", strategy.long, stop=high+syminfo.mintick, comment="MomLE")
 else
     strategy.cancel("MomLE")
 
-if (inDateRange and mom0 < 0 and mom1 < 0)
+if (inDateRange and mom0 < 0)
     strategy.entry("MomSE", strategy.short, stop=low-syminfo.mintick, comment="MomSE")
 else
     strategy.cancel("MomSE")
