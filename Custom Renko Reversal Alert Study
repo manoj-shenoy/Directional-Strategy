@@ -1,0 +1,29 @@
+//@version=2
+study("Custom Renko Reversal Alert Study", overlay=true) 
+//Buy entry if a bearish renko brick is followed by a bullish brick
+//Sell entry if a bullish brick is followed by a bearish brick
+
+pyram  = input(1, "Pyramiding", minval=1)
+
+pos = 0
+
+long = nz(pos[1]) < pyram and close[1] > open[2] and close[2] < close[3] and close > open
+short = nz(pos[1]) > -pyram and close[1] < open[2] and close[2] > close[3] and close < open
+
+pos := nz(pos[1]) < 0 and long ? 1 :
+       long ? nz(pos[1]) + 1 :
+       nz(pos[1]) > 0 and short ? -1 :
+       short ? nz(pos[1]) - 1 :
+       nz(pos[1])
+
+//Original long and short signals
+//long = close > open[1] and close[1] < close[2]
+//short = close < open[1] and close[1] > close[2]
+
+//Use these alerts to create server-side alerts (right-click on one of the buy or sell arrows on the chart and choose "add alert")
+alertcondition(long, title='Long Signal')
+alertcondition(short, title='Short Signal')
+
+//Use this to customize the look of the arrows to suit your needs.
+plotshape(long, location=location.belowbar, color=lime, style=shape.arrowup, text="Buy")
+plotshape(short, location=location.abovebar, color=red, style=shape.arrowdown, text="Sell")
