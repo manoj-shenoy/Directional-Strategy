@@ -23,5 +23,8 @@ pos := nz(pos[1]) < 0 and long_signal ? 1 :
        short_signal ? nz(pos[1]) - 1 :
        nz(pos[1])
 
+plotshape(long_signal, location=location.belowbar,  color=color.blue, style=shape.arrowup,   text="Long Entry",  title='Buy')
+plotshape(short_signal, location=location.abovebar, color=color.red,  style=shape.arrowdown, text="Short Entry", title='Sell')
+
 alertcondition(long_signal, "Long Signal")
 alertcondition(short_signal, "Short Signal")
