@@ -1,0 +1,81 @@
+//@version=4
+study("Custom Keltner Channel Study V1.0", overlay=true)
+
+startDate = input(title="Start Date", type=input.integer,
+     defval=1, minval=1, maxval=31)
+startMonth = input(title="Start Month", type=input.integer,
+     defval=1, minval=1, maxval=12)
+startYear = input(title="Start Year", type=input.integer,
+     defval=2019, minval=1900, maxval=2100)
+     
+endDate = input(title="End Date", type=input.integer,
+     defval=31, minval=1, maxval=31)
+endMonth = input(title="End Month", type=input.integer,
+     defval=12, minval=1, maxval=12)
+endYear = input(title="End Year", type=input.integer,
+     defval=2020, minval=1900, maxval=2100)
+
+inDateRange = (time >= timestamp(syminfo.timezone, startYear,
+         startMonth, startDate, 0, 0)) and
+     (time < timestamp(syminfo.timezone, endYear, endMonth, endDate, 0, 0))
+
+
+upper_source = close
+lower_source = close
+
+useTrueRange = input(true)
+length = input(5, minval=1)
+mult = input(1.0)
+pyram  = input(1, "Pyramiding", minval=1)
+
+upperma = sma(upper_source, length)
+lowerma = sma(lower_source,length)
+range = useTrueRange ? tr : high - low
+rangema = sma(range, length)
+upper = upperma + rangema * mult
+lower = lowerma - rangema * mult
+
+
+crossUpper = crossover(close, upper)
+crossLower = crossunder(close, lower)
+
+bprice = 0.0
+bprice := crossUpper ? high+syminfo.mintick : nz(bprice[1])
+
+sprice = 0.0
+sprice := crossLower ? low -syminfo.mintick : nz(sprice[1]) 
+
+crossBcond = false
+crossBcond := crossUpper ? true 
+ : na(crossBcond[1]) ? false : crossBcond[1]
+
+crossScond = false
+crossScond := crossLower ? true 
+ : na(crossScond[1]) ? false : crossScond[1]
+
+cancelBcond = crossBcond and (close < lowerma or high >= bprice )
+cancelScond = crossScond and (close > upperma or low <= sprice )
+
+pos = 0
+
+long_signal  = nz(pos[1]) <  pyram and crossUpper and close > high[1]+syminfo.mintick
+short_signal = nz(pos[1]) > -pyram and crossLower and close < low[1]-syminfo.mintick
+
+pos := nz(pos[1]) < 0 and long_signal ? 1 :
+       long_signal ? nz(pos[1]) + 1 :
+       nz(pos[1]) > 0 and short_signal ? -1 :
+       short_signal ? nz(pos[1]) - 1 :
+       nz(pos[1])
+
+p1 = plot(upper,title="Upper Keltner",linewidth=3)
+p2 = plot(lower,title="Lower Keltner",linewidth=3)
+fill(p1,p2,transp=75, color=color.yellow)
+
+
+plotshape(long_signal, location=location.belowbar,  color=color.blue, style=shape.arrowup,   text="Long Entry",  title='Buy')
+plotshape(short_signal, location=location.abovebar, color=color.red,  style=shape.arrowdown, text="Short Entry", title='Sell')
+
+alertcondition(long_signal, "Long Signal")
+alertcondition(short_signal, "Short Signal")
+// and close > high[1] + syminfo.mintick  //stop=bprice
+
