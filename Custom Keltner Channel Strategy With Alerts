@@ -1,0 +1,80 @@
+//@version=4
+strategy("Custom Keltner Channel Strategy With Alerts", 
+          overlay=true,
+          process_orders_on_close=true,
+          initial_capital=5000,
+          default_qty_type=strategy.percent_of_equity,
+          default_qty_value=70,
+          commission_type=strategy.commission.percent,
+          commission_value=0.25)
+
+startDate = input(title="Start Date", type=input.integer,
+     defval=1, minval=1, maxval=31)
+startMonth = input(title="Start Month", type=input.integer,
+     defval=1, minval=1, maxval=12)
+startYear = input(title="Start Year", type=input.integer,
+     defval=2019, minval=1900, maxval=2100)
+     
+endDate = input(title="End Date", type=input.integer,
+     defval=31, minval=1, maxval=31)
+endMonth = input(title="End Month", type=input.integer,
+     defval=12, minval=1, maxval=12)
+endYear = input(title="End Year", type=input.integer,
+     defval=2020, minval=1900, maxval=2100)
+
+inDateRange = (time >= timestamp(syminfo.timezone, startYear,
+         startMonth, startDate, 0, 0)) and
+     (time < timestamp(syminfo.timezone, endYear, endMonth, endDate, 0, 0))
+
+
+upper_source = close
+lower_source = close
+
+useTrueRange = input(false)
+length = input(5, minval=1)
+mult = input(1.0)
+
+upperma = sma(upper_source, length)
+lowerma = sma(lower_source,length)
+range = useTrueRange ? tr : high - low
+rangema = sma(range, length)
+upper = upperma + rangema * mult
+lower = lowerma - rangema * mult
+
+p1 = plot(upper,title="Upper Keltner",linewidth=3)
+p2 = plot(lower,title="Lower Keltner",linewidth=3)
+fill(p1,p2,transp=75, color=color.yellow)
+
+crossUpper = crossover(close, upper)
+crossLower = crossunder(close, lower)
+
+bprice = 0.0
+bprice := crossUpper ? high+syminfo.mintick : nz(bprice[1])
+
+sprice = 0.0
+sprice := crossLower ? low -syminfo.mintick : nz(sprice[1]) 
+
+crossBcond = false
+crossBcond := crossUpper ? true 
+ : na(crossBcond[1]) ? false : crossBcond[1]
+
+crossScond = false
+crossScond := crossLower ? true 
+ : na(crossScond[1]) ? false : crossScond[1]
+
+cancelBcond = crossBcond and (close < lowerma or high >= bprice )
+cancelScond = crossScond and (close > upperma or low <= sprice )
+
+if (cancelBcond)
+    strategy.cancel("KltChLE")
+
+if (crossUpper and inDateRange ) // and close > high[1] + syminfo.mintick 
+    strategy.entry("KltChLE", strategy.long, stop=bprice, comment="a=nikhilbinance b=short c=position q=100% e={{exchange}} s={{ticker}} t=market d=1 delay=1 a=nikhilbinance b=buy e={{exchange}} l=1 q=10% y=equity s={{ticker}} t=market d=1") //stop=bprice
+
+if (cancelScond)
+    strategy.cancel("KltChSE")
+
+if (crossLower and inDateRange ) // and close < low[1] - syminfo.mintick
+    strategy.entry("KltChSE", strategy.short, stop=sprice, comment="a=nikhilbinance b=long c=position q=100% e={{exchange}} s={{ticker}} t=market d=1 delay=1 a=nikhilbinance b=sell e={{exchange}} l=1 q=10% y=equity s={{ticker}} t=market d=1") //stop=sprice
+
+//plot(strategy.equity, title="equity", color=color.red, linewidth=2, style=plot.style_areabr)
