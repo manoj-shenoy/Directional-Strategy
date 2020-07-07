@@ -14,8 +14,8 @@ mom0 = momentum(price, length)
 
 pos = 0
 
-long_signal = nz(pos[1]) <  pyram and mom0 > 0
-short_signal = nz(pos[1]) > -pyram and mom0 < 0
+long_signal = nz(pos[1]) <  pyram and mom0[1] > 0 and close> high[1]+syminfo.mintick
+short_signal = nz(pos[1]) > -pyram and mom0[1] < 0 and close< low[1]-syminfo.mintick 
 
 pos := nz(pos[1]) < 0 and long_signal ? 1 :
        long_signal ? nz(pos[1]) + 1 :
