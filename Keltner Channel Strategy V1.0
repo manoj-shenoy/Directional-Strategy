@@ -1,5 +1,5 @@
 //@version=4
-strategy("Keltner Channel Strategy V1.0", overlay=true,process_orders_on_close=true,initial_capital=5000,default_qty_type=strategy.percent_of_equity,default_qty_value=75,commission_type=strategy.commission.percent,commission_value=0.25)
+strategy("Custom Keltner Channel Strategy V1.0", overlay=true,process_orders_on_close=true,initial_capital=5000,default_qty_type=strategy.percent_of_equity,default_qty_value=75,commission_type=strategy.commission.percent,commission_value=0.25)
 
 startDate = input(title="Start Date", type=input.integer,
      defval=1, minval=1, maxval=31)
@@ -61,13 +61,13 @@ cancelScond = crossScond and (close > upperma or low <= sprice )
 if (cancelBcond)
     strategy.cancel("KltChLE")
 
-if (crossUpper and inDateRange)
-    strategy.entry("KltChLE", strategy.long, stop=bprice, comment="KltChLE")
+if (crossUpper and inDateRange ) // and close > high[1] + syminfo.mintick 
+    strategy.entry("KltChLE", strategy.long, stop=bprice, comment="KltChLE") //stop=bprice
 
 if (cancelScond)
     strategy.cancel("KltChSE")
 
-if (crossLower and inDateRange)
-    strategy.entry("KltChSE", strategy.short, stop=sprice, comment="KltChSE")
+if (crossLower and inDateRange ) // and close < low[1] - syminfo.mintick
+    strategy.entry("KltChSE", strategy.short, stop=sprice, comment="KltChSE") //stop=sprice
 
 //plot(strategy.equity, title="equity", color=color.red, linewidth=2, style=plot.style_areabr)
