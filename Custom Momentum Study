@@ -1,0 +1,27 @@
+//@version=4
+study("Custom Momentum Study", overlay=true)
+
+pyram  = input(1, "Pyramiding", minval=1)
+
+length = input(2)
+price = close
+
+momentum(src, length) =>
+    mom = src - src[length]
+    mom
+
+mom0 = momentum(price, length)
+
+pos = 0
+
+long_signal = nz(pos[1]) <  pyram and mom0 > 0
+short_signal = nz(pos[1]) > -pyram and mom0 < 0
+
+pos := nz(pos[1]) < 0 and long_signal ? 1 :
+       long_signal ? nz(pos[1]) + 1 :
+       nz(pos[1]) > 0 and short_signal ? -1 :
+       short_signal ? nz(pos[1]) - 1 :
+       nz(pos[1])
+
+alertcondition(long_signal, "Long Signal")
+alertcondition(short_signal, "Short Signal")
