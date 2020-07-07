@@ -1,0 +1,50 @@
+//@version=4
+strategy("Custom Momentum Strategy + RSI",
+         overlay=true, 
+         initial_capital=5000,
+         currency="USD",
+         default_qty_type=strategy.percent_of_equity,
+         default_qty_value=70,
+         commission_type=strategy.commission.percent,
+         commission_value=0.25,
+         process_orders_on_close=true,
+         calc_on_every_tick=true)
+
+startDate = input(title="Start Date", type=input.integer,
+     defval=1, minval=1, maxval=31)
+startMonth = input(title="Start Month", type=input.integer,
+     defval=1, minval=1, maxval=12)
+startYear = input(title="Start Year", type=input.integer,
+     defval=2019, minval=1900, maxval=2100)
+     
+endDate = input(title="End Date", type=input.integer,
+     defval=1, minval=1, maxval=31)
+endMonth = input(title="End Month", type=input.integer,
+     defval=1, minval=1, maxval=12)
+endYear = input(title="End Year", type=input.integer,
+     defval=2021, minval=1900, maxval=2100)
+
+inDateRange = (time >= timestamp(syminfo.timezone, startYear,
+         startMonth, startDate, 0, 0)) and
+     (time < timestamp(syminfo.timezone, endYear, endMonth, endDate, 0, 0))
+
+length = input(2)
+price = close
+
+momentum(src, length) =>
+    mom = src - src[length]
+    mom
+
+mom0 = momentum(price, length)
+
+if (inDateRange and mom0 > 0 and rsi(close[11], 5) < 20)
+    strategy.entry("MomLE", strategy.long, stop=high+syminfo.mintick, comment="MomLE")
+else
+    strategy.cancel("MomLE")
+
+if (inDateRange and mom0 < 0 and rsi(close[11], 5) > 80)
+    strategy.entry("MomSE", strategy.short, stop=low-syminfo.mintick, comment="MomSE")
+else
+    strategy.cancel("MomSE")
+
+//plot(strategy.equity, title="equity", color=color.red, linewidth=2, style=plot.style_areabr)
