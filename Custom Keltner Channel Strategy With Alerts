@@ -68,13 +68,13 @@ cancelScond = crossScond and (close > upperma or low <= sprice )
 if (cancelBcond)
     strategy.cancel("KltChLE")
 
-if (crossUpper and inDateRange ) // and close > high[1] + syminfo.mintick 
-    strategy.entry("KltChLE", strategy.long, stop=bprice, comment="a=nikhilbinance b=short c=position q=100% e={{exchange}} s={{ticker}} t=market d=1 delay=1 a=nikhilbinance b=buy e={{exchange}} l=1 q=10% y=equity s={{ticker}} t=market d=1") //stop=bprice
+if (crossUpper and inDateRange)
+    strategy.entry("KltChLE", strategy.long, stop=bprice, comment="a=* b=short c=position q=100% e=binancefutures s={{ticker}} t=market d=1 delay=1 a=* b=buy e=binancefutures l=1 q=10% y=equity s={{ticker}} t=market d=1")
 
 if (cancelScond)
     strategy.cancel("KltChSE")
 
-if (crossLower and inDateRange ) // and close < low[1] - syminfo.mintick
-    strategy.entry("KltChSE", strategy.short, stop=sprice, comment="a=nikhilbinance b=long c=position q=100% e={{exchange}} s={{ticker}} t=market d=1 delay=1 a=nikhilbinance b=sell e={{exchange}} l=1 q=10% y=equity s={{ticker}} t=market d=1") //stop=sprice
+if (crossLower and inDateRange)
+    strategy.entry("KltChSE", strategy.short, stop=sprice, comment="a=* b=long c=position q=100% e=binancefutures s={{ticker}} t=market d=1 delay=1 a=* b=sell e=binancefutures l=1 q=10% y=equity s={{ticker}} t=market d=1")
 
 //plot(strategy.equity, title="equity", color=color.red, linewidth=2, style=plot.style_areabr)
