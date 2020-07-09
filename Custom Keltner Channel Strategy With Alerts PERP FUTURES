@@ -94,19 +94,19 @@ syntax_ticker() =>
     string ticker = ""
 
     if(syminfo.ticker == "ADAUSDTPERP")
-        ticker = "ADAUSDT"
+        ticker := "ADAUSDT"
     else if(syminfo.ticker == "BTCUSDTPERP")
-        ticker = "BTCUSDT"
+        ticker := "BTCUSDT"
     else if(syminfo.ticker == "EOSUSDTPERP")
-        ticker = "EOSUSDT"
+        ticker := "EOSUSDT"
     else if(syminfo.ticker == "ETHUSDTPERP")
-        ticker = "ETHUSDT"
+        ticker := "ETHUSDT"
     else if(syminfo.ticker == "LINKUSDTPERP")
-        ticker = "LINKUSDT"
+        ticker := "LINKUSDT"
     else if(syminfo.ticker == "XRPUSDTPERP")
-        ticker = "XRPUSDT"
+        ticker := "XRPUSDT"
     else if(syminfo.ticker == "XTZUSDTPERP")
-        ticker = "XTZUSDT"
+        ticker := "XTZUSDT"
     
     ticker
 
