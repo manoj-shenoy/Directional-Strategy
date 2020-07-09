@@ -1,0 +1,105 @@
+//@version=4
+strategy("Custom Keltner Channel Strategy With Alerts V2.0", 
+          overlay=true,
+          process_orders_on_close=true,
+          calc_on_every_tick=true,
+          initial_capital=5000,
+          default_qty_type=strategy.percent_of_equity,
+          default_qty_value=70,
+          commission_type=strategy.commission.percent,
+          commission_value=0.25)
+
+startDate = input(title="Start Date", type=input.integer,
+     defval=1, minval=1, maxval=31)
+startMonth = input(title="Start Month", type=input.integer,
+     defval=1, minval=1, maxval=12)
+startYear = input(title="Start Year", type=input.integer,
+     defval=2019, minval=1900, maxval=2100)
+     
+endDate = input(title="End Date", type=input.integer,
+     defval=31, minval=1, maxval=31)
+endMonth = input(title="End Month", type=input.integer,
+     defval=12, minval=1, maxval=12)
+endYear = input(title="End Year", type=input.integer,
+     defval=2020, minval=1900, maxval=2100)
+
+inDateRange = (time >= timestamp(syminfo.timezone, startYear,
+         startMonth, startDate, 0, 0)) and
+     (time < timestamp(syminfo.timezone, endYear, endMonth, endDate, 0, 0))
+     
+
+get_renko() =>
+    float renko_barsize = 0.0
+
+    if(syminfo.ticker == "ADAUSDT")
+        renko_barsize := 0.00025
+    else if(syminfo.ticker == "BTCUSDT")
+        renko_barsize := 31
+    else if(syminfo.ticker == "EOSUSDT")
+        renko_barsize := 0.014
+    else if(syminfo.ticker == "ETHUSDT")
+        renko_barsize := 0.98
+    else if(syminfo.ticker == "LINKUSDT")
+        renko_barsize := 0.0305
+    else if(syminfo.ticker == "XRPUSDT")
+        renko_barsize := 0.0013
+    else if(syminfo.ticker == "XTZUSDT")
+        renko_barsize := 0.0099
+    
+    renko_barsize
+
+renko_bar = renko(symbol=syminfo.tickerid, style="Traditional", param=get_renko())
+renko_high = security(renko_bar, "1", high)
+renko_low = security(renko_bar, "1", low)
+
+upper_source = close
+lower_source = close
+
+useTrueRange = input(false)
+length = input(5, minval=1)
+mult = input(1.0)
+
+upperma = sma(upper_source, length)
+lowerma = sma(lower_source,length)
+range = useTrueRange ? tr : high - low
+rangema = sma(range, length)
+upper = upperma + rangema * mult
+lower = lowerma - rangema * mult
+
+p1 = plot(upper,title="Upper Keltner",linewidth=3)
+p2 = plot(lower,title="Lower Keltner",linewidth=3)
+fill(p1,p2,transp=75, color=color.yellow)
+
+crossUpper = crossover(close, upper)
+crossLower = crossunder(close, lower)
+
+bprice = 0.0
+bprice := crossUpper ? renko_high+syminfo.mintick : nz(bprice[1])
+
+sprice = 0.0
+sprice := crossLower ? renko_low -syminfo.mintick : nz(sprice[1]) 
+
+crossBcond = false
+crossBcond := crossUpper ? true 
+ : na(crossBcond[1]) ? false : crossBcond[1]
+
+crossScond = false
+crossScond := crossLower ? true 
+ : na(crossScond[1]) ? false : crossScond[1]
+
+cancelBcond = crossBcond and (close < lowerma or renko_high >= bprice )
+cancelScond = crossScond and (close > upperma or renko_low <= sprice )
+
+if (cancelBcond)
+    strategy.cancel("KltChLE")
+
+if (crossUpper and inDateRange )
+    strategy.entry("KltChLE", strategy.long, stop=bprice, comment="a=nikhilbinance b=short c=position q=100% e=binancefutures s=" + syminfo.ticker + " t=market | delay=1 | a=nikhilbinance b=buy e=binancefutures l=1 q=10% y=equity s=" + syminfo.ticker + " t=market")
+
+if (cancelScond)
+    strategy.cancel("KltChSE")
+
+if (crossLower and inDateRange )
+    strategy.entry("KltChSE", strategy.short, stop=sprice, comment="a=nikhilbinance b=long c=position q=100% e=binancefutures s=" + syminfo.ticker + " t=market | delay=1 | a=nikhilbinance b=sell e=binancefutures l=1 q=10% y=equity s=" + syminfo.ticker + " t=market")
+
+//plot(strategy.equity, title="equity", color=color.red, linewidth=2, style=plot.style_areabr)
