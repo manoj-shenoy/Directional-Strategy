@@ -1,0 +1,15 @@
+// Short Signal
+
+t = close c=order
+delay=0.25
+a=manojbinance b=long c=position q=100% e=binancefutures s=ADAUSDT t=market
+delay=1
+a=manojbinance b=buy e=binancefutures l=1 q=10% y=equity s=ADAUSDT sl=-1%--0.001% t=market
+
+
+// Long Signal
+t=close c=order
+delay=0.25
+a=manojbinance b=short c=position q=100% e=binancefutures s=ADAUSDT t=market 
+delay=1
+a=manojbinance b=sell e=binancefutures l=1 q=10% y=equity s=ADAUSDT sl=0.001%-1% t=market
