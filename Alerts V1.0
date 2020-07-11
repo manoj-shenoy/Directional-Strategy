@@ -1,6 +1,6 @@
 // Short Signal
 
-t = close c=order s=ADAUSDT
+t=close c=order s=ADAUSDT
 delay=0.25
 a=manojbinance b=long c=position q=100% e=binancefutures s=ADAUSDT t=market
 delay=1
