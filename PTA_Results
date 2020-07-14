@@ -18,7 +18,6 @@ nth percentile = chosen "tick_size_percentile" threshold variable in Pre_Trade_A
 Use this determined tick size as upper bound for trade entry and in backtest                        |
                                                                                                     |
 -----------------------------------------------------------------------------------------------------
-                                                                                                    |
 Choosing bar size lower bound:                                                                      |
                                                                                                     |
 bar size = (nth percentile_range_percentage) * (current price)                                      |
