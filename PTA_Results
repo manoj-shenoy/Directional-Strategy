@@ -3,30 +3,30 @@ Tick size/Bar size selection methodology and results
 Refer to Pre_Trade_Analysis.ipynb file for numbers to be used in these calculations
 
 
-
-Choosing tick size for backtest and upper bound:
-
-ticks = (average_range_percentage * current price)/tick size
-
-if ticks > nth percentile tick size:
-   use ticks + 1
-else:
-   use nth percentile tick size + 1
-
-nth percentile = chosen "tick_size_percentile" threshold variable in Pre_Trade_Analysis script
-
-Use this determined tick size as upper bound for trade entry and in backtest
-
-
-
-Choosing bar size lower bound:
-
-bar size = (nth percentile_range_percentage) * (current price)
-
-nth percentile = chosen "bar_size_percentile" threshold variable in Pre_Trade_Analysis script
-
-After obtaining lower bound, optimize for best bar size above this level
-
+-----------------------------------------------------------------------------------------------------
+Choosing tick size for backtest and upper bound:                                                    |
+                                                                                                    |
+ticks = (average_range_percentage * current price)/tick size                                        |
+                                                                                                    |
+if ticks > nth percentile tick size:                                                                |
+   use ticks + 1                                                                                    |
+else:                                                                                               |
+   use nth percentile tick size + 1                                                                 |
+                                                                                                    |
+nth percentile = chosen "tick_size_percentile" threshold variable in Pre_Trade_Analysis script      |
+                                                                                                    |
+Use this determined tick size as upper bound for trade entry and in backtest                        |
+                                                                                                    |
+-----------------------------------------------------------------------------------------------------
+                                                                                                    |
+Choosing bar size lower bound:                                                                      |
+                                                                                                    |
+bar size = (nth percentile_range_percentage) * (current price)                                      |
+                                                                                                    |
+nth percentile = chosen "bar_size_percentile" threshold variable in Pre_Trade_Analysis script       |
+                                                                                                    |
+After obtaining lower bound, optimize for best bar size above this level                            |
+-----------------------------------------------------------------------------------------------------
 
 
 Results:
