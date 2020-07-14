@@ -1,0 +1,91 @@
+1. For checking current Working Directory, use command 'pwd'.Navigate to your working dir.
+ Create a virtual environment using virtualenv on cmd or Anaconda Powershell.
+Type "virtualenv myenv". Here myenv is name of your virtual environment
+
+2. Once created, activate the virtual environment by typing 
+"conda activate myenv". Replace myenv with name of your own virtual environment.
+
+3. Install chalice using pip.- "pip install chalice"
+(Requires Python '>=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*')
+Install Python 3.6 to be safe by typing "conda install python=3.6"
+Now install chalice if earlier installation had failed, owing to wrong
+Python version.
+
+4.After Chalice is installed, create new Chalice project by typing
+"chalice new-project tradingview-binance-alert". Here "trading-view-binance-alert"
+is name of your new project.
+
+5.Change directory to your newly created directory by typing "cd trading-view-binance-alert"
+
+6.Once inside the project, type "chalice local". That will start your local dev server!
+It will show a message as "Serving on http://127.0.0.1:8000". Here your port is 8000.
+You can fire up your local app by opening any web browser and typing "localhost:8000"
+
+7. If you navigate to your newly created project using chalice, you ll notice it has
+an app.py chalice web app python file inside. That has your app routes.
+
+8. Inside the new project, create a new folder named chalicelib.
+On creating Chalicelib, put BinanceKeys file into it which has Auth token
+and Pwd.
+
+9. Create a AWS Lambda account. 
+
+10. An AWS URL/key that gets generated, when Chalice is deployed.
+to the Cloud. The TV Alert uses this AWS URL as the webhook URL.
+
+Requirements
+
+AWS Lambda key/URL pair
+
+Format of TV Alert (Json format) for Long Signal
+{"symbol":{{tickerid}},"trigger":{{high}},"side":"BUY",
+"high":{{high}},"low":{{low}},"close":{{close}}
+
+Format of TV Alert (Json format) for Short Signal
+{"symbol":{{tickerid}},"trigger":{{low}},"side":"SELL",
+"high":{{high}},"low":{{low}},"close":{{close}}}
+
+
+/// Just one AWS LAmbda URL/key for all alerts ////
+
+//////////// xxxxx  OMS LOGIC xxxxxx //////////////
+
+1.If a condition is satisfied in alerts, It will give a message
+The message will be in the form of a Json payload.
+It will have the symbol, Open,High, Low, Close,Side/Direction
+2.Now, I have to go into the code and write the order based on 
+wther there is an open position or not.
+3.But before all that, it will create a sweeping cancel all open
+orders
+futures_cancel_all_open_orders(**params)
+
+4.If no position- it will create stop market buy or sell
+order based on 10% of margin balance. The trigger price and most
+Importantly, the side/direction is also obtained from the payload.
+futures_create_order(symbol=symbol,side=webhook_message["side"],
+	type="STOP_MARKET",stopPrice=webhook_message["trigger"],
+	quantity=position_size)		
+
+5. If position > 0, it will create a market closePosition
+order first.Trigger price and Side are in TV alerts Payload
+futures_create_order(symbol=symbol,side=webhook_message["side"],
+	type="STOP_MARKET",stopPrice=webhook_message["trigger"],
+	closePosition= true)	
+It will be followed by a stop market order based on
+10% of margin balance.Trigger price and Side are in TV alerts Payload 
+futures_create_order(symbol=symbol,side=webhook_message["side"],
+	type="STOP_MARKET",stopPrice=webhook_message["trigger"],
+	quantity=position_size)
+
+6. If position <0, it will create a market closePosition order
+first.Trigger price and Side are in TV alerts Payload
+futures_create_order(symbol=symbol,side=webhook_message["side"],
+	type="STOP_MARKET",stopPrice=webhook_message["trigger"],
+	closePosition= true)
+It will be followed by a stop market order based on
+10% of margin balance.Trigger price and Side are in TV alerts Payload 
+futures_create_order(symbol=symbol,side=webhook_message["side"],
+	type="STOP_MARKET",stopPrice=webhook_message["trigger"],
+	quantity=position_size)	 	
+
+
