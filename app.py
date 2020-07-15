@@ -1,24 +1,20 @@
-import sys,os,datetime,time,progressbar
-import numpy as np
-import pandas as pd
+import sys,os,datetime,time
 from binance.client import Client
 from binance.enums import *
 
-# import site
-# site.addsitedir(r'C:\\Users\\Admin\\python-binance-master\\examples')
-from chalicelib import BinanceKeys
-# from BinanceKeys import BinanceKey1
-# import technical_indicators
+# from chalicelib import BinanceKeys
+from BinanceKeys import BinanceKey1
+
 percent_of_marginbal=0.1 # Order size as 10% of Margin Balance 
 # watch_list=['BTCUSDT','ETHUSDT','LTCUSDT','XTZUSDT','DASHUSDT','EOSUSDT'] # Add more
 
-api_key = BinanceKeys.BinanceKey1['api_key']
-api_secret = BinanceKeys.BinanceKey1['api_secret']
+api_key = BinanceKey1['api_key']
+api_secret = BinanceKey1['api_secret']
 
 client = Client(api_key, api_secret)
 
-asset_balance=client.get_asset_balance(asset=symbol[3:0]) # Initial Margin balance
-position_size=%.3f%(percent_of_marginbal * float(asset_balance['free']),6)
+# asset_balance=client.get_asset_balance(asset=symbol[3:0]) # Initial Margin balance
+# position_size=%.3f%(float(percent_of_marginbal) * float(asset_balance['free']),6)
 
 # Chalice is a serverless microframework for Python.
 # Serverless Apps can be deployed on AWS Lambda using AWS Chalice as serverless back-end
@@ -27,8 +23,7 @@ from chalice import Chalice
 
 app = Chalice(app_name='tradingview-binance-alert')
 
-
-@app.route('/binancebot/',methods=['POST'])
+@app.route('/binancebot',methods=['POST'])
 def binancebot():
     
     # Parsing the webhook message, which is a Json payload
@@ -38,8 +33,16 @@ def binancebot():
                   "price":webhook_message["trigger"],
                   "side": webhook_message["side"]}
     
-    # Get Initial Margin Balance
+    # Get Bid-Ask Prices 
+    order_book=client.get_order_book(symbol=webhook_message["symbol"][0:-4])
+    bid_ask=float(order_book['bids'][0][0])
+    
+    # Get Initial Position
     position=client.get_asset_balance(asset=webhook_message["symbol"][0:-8])
+    
+    # Initial USDT Margin balance
+    margin_balance=client.get_asset_balance(asset=webhook_message["symbol"][-8:-4])
+    position_size='%.3f'%(float(percent_of_marginbal) * float(margin_balance['free'])/bid_ask)
     
     # Cancel All Open Orders First
     clear_open_orders=futures_cancel_all_open_orders(symbol=webhook_message["symbol"][0:-4])
@@ -61,7 +64,7 @@ def binancebot():
         
         response_freshorder=client.futures_create_order(symbol=webhook_message["symbol"][0:-4],
                                                         side=webhook_message["side"],
-                                                        type="STOP_MARKET",stopPrice=webhook_message["trigger"],
+                                                        type="STOP_MARKET",
                                                         stopPrice=webhook_message["trigger"],
                                                         quantity=position_size)
    
