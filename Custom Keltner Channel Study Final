@@ -1,0 +1,73 @@
+//@version=4
+study("Custom Keltner Channel Study Final", overlay=true)
+
+startDate = input(title="Start Date", type=input.integer,
+     defval=1, minval=1, maxval=31)
+startMonth = input(title="Start Month", type=input.integer,
+     defval=1, minval=1, maxval=12)
+startYear = input(title="Start Year", type=input.integer,
+     defval=2019, minval=1900, maxval=2100)
+
+endDate = input(title="End Date", type=input.integer,
+     defval=31, minval=1, maxval=31)
+endMonth = input(title="End Month", type=input.integer,
+     defval=12, minval=1, maxval=12)
+endYear = input(title="End Year", type=input.integer,
+     defval=2020, minval=1900, maxval=2100)
+
+inDateRange = (time >= timestamp(syminfo.timezone, startYear,
+         startMonth, startDate, 0, 0)) and
+     (time < timestamp(syminfo.timezone, endYear, endMonth, endDate, 0, 0))
+
+pyram  = input(1, "Pyramiding", minval=1)
+ticks_floor = input(1, minval=1, title="Ticks Floor", confirm=true)
+ticks_ceiling = input(35, minval=1, title="Ticks Ceiling", confirm=true)
+
+upper_source = close
+lower_source = close
+
+useTrueRange = input(false)
+length = input(5, minval=1)
+mult = input(1.0)
+
+upperma = sma(upper_source, length)
+lowerma = sma(lower_source,length)
+range = useTrueRange ? tr : high - low
+rangema = sma(range, length)
+upper = upperma + rangema * mult
+lower = lowerma - rangema * mult
+
+crossUpper = crossover(close, upper)
+crossLower = crossunder(close, lower)
+
+bprice_floor = (((high+(syminfo.mintick*ticks_floor))/close) - 1)*100
+bprice_ceiling = (((high+(syminfo.mintick*ticks_ceiling))/close) - 1)*100
+
+sprice_floor = (((low-(syminfo.mintick*ticks_floor))/close) - 1)*100
+sprice_ceiling = (((low-(syminfo.mintick*ticks_ceiling))/close) - 1)*100
+
+plot(bprice_floor, "bprice_floor", color=color.green)
+plot(bprice_ceiling, "bprice_ceiling", color=color.green)
+plot(sprice_floor, "sprice_floor", color=color.red)
+plot(sprice_ceiling, "sprice_ceiling",color=color.red)
+
+pos = 0
+
+long_signal  = nz(pos[1]) <  pyram and crossUpper
+short_signal = nz(pos[1]) > -pyram and crossLower
+
+pos := nz(pos[1]) < 0 and long_signal ? 1 :
+       long_signal ? nz(pos[1]) + 1 :
+       nz(pos[1]) > 0 and short_signal ? -1 :
+       short_signal ? nz(pos[1]) - 1 :
+       nz(pos[1])
+
+p1 = plot(upper,title="Upper Keltner",linewidth=3)
+p2 = plot(lower,title="Lower Keltner",linewidth=3)
+fill(p1,p2,transp=75, color=color.yellow)
+
+plotshape(long_signal, location=location.belowbar,  color=color.blue, style=shape.arrowup,   text="Long Entry",  title='Buy')
+plotshape(short_signal, location=location.abovebar, color=color.red,  style=shape.arrowdown, text="Short Entry", title='Sell')
+
+alertcondition(long_signal, title="Long Signal")
+alertcondition(short_signal, title="Short Signal")
