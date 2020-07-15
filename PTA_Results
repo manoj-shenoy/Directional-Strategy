@@ -37,12 +37,12 @@ Results:
 |    BNB       |     0.086    |      73       |  585.08%   |       229        |         54.15%         |       8.81%      |  * updated with 90th percentile
 |    DASH      |     0.48     |      28       |  1176.9%   |       210        |         53.81%         |       8.43%      |  * updated with 90th percentile
 |    ETC       |     0.036    |      31       |  2395.57%  |       328        |         54.27%         |      12.43%      |  * updated with 90th percentile
-|    ETH       |     1.09     |      99       |  648.32%   |       234        |         48.72%         |       9.00%      |  * eliminated - very bad performance
-|    EOS       |     0.024    |      19       |  376.54%   |       150        |         48.00%         |      10.36%      |  * updated with 90th percentile
+|    ETH       |              |               |            |                  |                        |                  |    eliminated - very bad performance
+|    EOS       |     0.024    |      19       |  376.54%   |       150        |         48.00%         |      10.36%      |    updated with 90th percentile
 |    LINK      |     0.028    |      18       |  1557.77%  |       307        |         47.88%         |      10.63%      |  * updated with 90th percentile
-|    LTC       |     0.23     |      26       |  842.4%    |       323        |         44.27%         |      11.43%      |  * eliminated - very bad performance
+|    LTC       |              |               |            |                  |                        |                  |    eliminated - very bad performance
 |    XMR       |     0.30     |      18       |  1332.85%  |       249        |         56.63%         |       6.81%      |  * updated with 90th percentile
-|    XTZ       |     .029     |      12       |  675.39%   |       136        |         58.09%         |      14.89%      |  * updated with 90th percentile
+|    XTZ       |     .029     |      12       |  675.39%   |       136        |         58.09%         |      14.89%      |    updated with 90th percentile
 ===========================================================================================================================
 
 Ticks lower and upper bounds will be converted to price and then a percentage of current price in pine script. 
