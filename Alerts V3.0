@@ -1,17 +1,15 @@
 Long Signal
 
-a=* b=short c=position q=100% e=binancefutures s=[TICKER] sl={{plot("bprice_floor")}}%-{{plot("bprice_ceiling")}}% t=market
+a=* b=short c=position q=100% e=binancefutures s=BTCUSDT t=market
+a=* e=binancefutures t=close c=order s=BTCUSDT
 delay=1
-a=* e=binancefutures t=close c=order s=[TICKER]
-delay=1
-a=* b=sell e=binancefutures l=1 q=10% y=equity s=[TICKER] sl={{plot("bprice_floor")}}%-{{plot("bprice_ceiling")}}% t=market
+a=* b=sell e=binancefutures l=1 q=10% y=equity s=BTCUSDT sl={{plot("bprice_floor")}}%-{{plot("bprice_ceiling")}}% t=market
 
 
 
 Short Signal
 
-a=* b=long c=position q=100% e=binancefutures s=[TICKER] sl={{plot("sprice_floor")}}%-{{plot("sprice_ceiling")}}% t=market
+a=* b=long c=position q=100% e=binancefutures s=BTCUSDT t=market
+a=* e=binancefutures t=close c=order s=BTCUSDT
 delay=1
-a=* e=binancefutures t=close c=order s=[TICKER]
-delay=1
-a=* b=buy e=binancefutures l=1 q=10% y=equity s=[TICKER] sl={{plot("sprice_floor")}}%-{{plot("sprice_ceiling")}}% t=market
+a=* b=buy e=binancefutures l=1 q=10% y=equity s=BTCUSDT sl={{plot("sprice_floor")}}%-{{plot("sprice_ceiling")}}% t=market
