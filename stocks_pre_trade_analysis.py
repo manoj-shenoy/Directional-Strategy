@@ -1,3 +1,6 @@
+# Log into Quantopian.com and go to https://www.quantopian.com/research/notebooks/
+# Then create a new ipynb notebook and run this script there
+
 import pandas as pd
 import numpy as np
 import datetime
