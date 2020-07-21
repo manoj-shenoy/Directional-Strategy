@@ -5,7 +5,7 @@ from binance.enums import *
 from chalicelib import BinanceKeys
 # from BinanceKeys import BinanceKey1
 
-from chalicelib import precision,price_precision_dict,quantity_precision_dict
+from chalicelib import precision #, precision.price_precision_dict, precision.quantity_precision_dict, precision.mintick_dict, precision.ticks_dict
 
 percent_of_marginbal=0.1 # Order size as 10% of Margin Balance 
 
@@ -75,19 +75,17 @@ def binancebot():
     # Trigger Price
 #     trigger_price = "{:0.0{}f}".format(float(webhook_message["trigger"]),price_preci)
     if webhook_message["side"]=="BUY" and ask_ask >= webhook_message["high"]:
-        trigger_price = round(ask_ask + (0.6 * float(mintick) * int(ticks) * ask_ask),int(price_preci))
+        trigger_price = round(ask_ask + (0.6 * float(mintick) * int(ticks)),int(price_preci))
         
     elif webhook_message["side"]=="BUY" and ask_ask < webhook_message["high"]:#new
-        trigger_price = round(float(webhook_message["high"]) + (0.6 * float(mintick) *
-                                                                int(ticks)* float(webhook_message["high"])),
+        trigger_price = round(float(webhook_message["high"]) + (0.6 * float(mintick) * int(ticks)),
                               int(price_preci))
 
     elif webhook_message["side"]=="SELL" and bid_ask <= webhook_message["low"]:#new
-        trigger_price = round(bid_ask - (0.6 * float(mintick) * int(ticks) * bid_ask),int(price_preci))
+        trigger_price = round(bid_ask - (0.6 * float(mintick) * int(ticks)),int(price_preci))
 
     elif webhook_message["side"]=="SELL" and bid_ask > webhook_message["low"]:
-        trigger_price = round(float(webhook_message["low"]) - (0.6 * float(mintick) *
-                                                         int(ticks) * float(webhook_message["low"])),
+        trigger_price = round(float(webhook_message["low"]) - (0.6 * float(mintick) * int(ticks)),
                               int(price_preci))
 
 #     trigger_price = round(float(webhook_message["trigger"]),int(price_preci))
@@ -141,4 +139,3 @@ def binancebot():
 #
 # See the README documentation for more examples.
 #
-
