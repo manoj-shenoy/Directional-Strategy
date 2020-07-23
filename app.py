@@ -47,8 +47,8 @@ def binancebot():
     
     # Get Bid-Ask Prices 
     order_book = client.get_order_book(symbol=str(webhook_message["symbol"])[0:-4])
-    bid_ask = float(order_book['bids'][0][0])
-    ask_ask = float(order_book['asks'][0][0])
+    bid_ask = float(order_book['bids'][0][0]) # Current Market price when selling
+    ask_ask = float(order_book['asks'][0][0]) # Current Market price wwhen buying
     
     price_preci = precision.get_precision(str(webhook_message["symbol"]),
                                           price_precision_dict)
@@ -59,8 +59,10 @@ def binancebot():
     mintick = precision.get_precision(webhook_message["symbol"], mintick_dict)
     ticks = precision.get_precision(webhook_message["symbol"], ticks_dict)
     
-    # Get Initial Position
-    position = client.get_asset_balance(asset=str(webhook_message["symbol"])[0:-8])
+    # Get Position
+#     position = client.get_asset_balance(asset=str(webhook_message["symbol"])[0:-8])
+    position = precision.get_positions(symbol = str(webhook_message["symbol"])[0:-4],
+                                       all_pos_info= client.futures_position_information())
     
     # Initial USDT Margin balance
 #     margin_balance = client.get_asset_balance(asset=webhook_message["symbol"][-8:-4])
@@ -103,8 +105,9 @@ def binancebot():
                                                         stopPrice = trigger_price,
                                                         quantity = position_size)
 
-
-    elif position!=0:
+    
+    elif position < 0 and webhook_message["side"]=="BUY":
+        
         response_closepos=client.futures_create_order(symbol = str(webhook_message["symbol"])[0:-4],
                                                       side = webhook_message["side"],
                                                       type = "STOP_MARKET",
@@ -116,26 +119,23 @@ def binancebot():
                                                         type = "STOP_MARKET",
                                                         stopPrice = trigger_price,
                                                         quantity = position_size) 
-    
-    
 
+    elif position > 0 and webhook_message["side"]=="SELL":
+        
+        response_closepos=client.futures_create_order(symbol = str(webhook_message["symbol"])[0:-4],
+                                                      side = webhook_message["side"],
+                                                      type = "STOP_MARKET",
+                                                      stopPrice = trigger_price,
+                                                      closePosition = "true")
+        
+        response_freshorder=client.futures_create_order(symbol = str(webhook_message["symbol"])[0:-4],
+                                                        side = webhook_message["side"],
+                                                        type = "STOP_MARKET",
+                                                        stopPrice = trigger_price,
+                                                        quantity = position_size) 
 
-# The view function above will return {"hello": "world"}
-# whenever you make an HTTP GET request to '/'.
-#
-# Here are a few more examples:
-#
-# @app.route('/hello/{name}')
-# def hello_name(name):
-#    # '/hello/james' -> {"hello": "james"}
-#    return {'hello': name}
-#
-# @app.route('/users', methods=['POST'])
-# def create_user():
-#     # This is the JSON body the user sent in their POST request.
-#     user_as_json = app.current_request.json_body
-#     # We'll echo the json body back to the user in a 'user' key.
-#     return {'user': user_as_json}
-#
-# See the README documentation for more examples.
-#
+        
+    elif (position > 0 and webhook_message["side"]=="BUY") or (position < 0 and webhook_message["side"]=="SELL"):
+        
+        print ("Same Side Position already exists")
+
